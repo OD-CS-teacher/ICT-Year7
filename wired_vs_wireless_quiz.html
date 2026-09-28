@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wired vs Wireless Networks - Quick Quiz</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;font-family:Arial,Helvetica,sans-serif;
+    background:linear-gradient(135deg,#eef4ff,#f8fbff);
+    color:#172033;min-height:100vh;
+  }
+  .container{max-width:900px;margin:0 auto;padding:30px 18px 50px}
+  .header{
+    background:#172b4d;color:white;border-radius:18px;padding:28px;
+    box-shadow:0 8px 25px rgba(23,43,77,.15);margin-bottom:22px
+  }
+  .header h1{margin:0 0 8px;font-size:30px}
+  .header p{margin:0;opacity:.9}
+  .progress-wrap{margin-top:20px;background:rgba(255,255,255,.2);border-radius:10px;height:10px;overflow:hidden}
+  .progress{height:100%;width:0;background:#7dd3fc;transition:.3s}
+  .card{
+    background:white;border-radius:18px;padding:28px;
+    box-shadow:0 5px 20px rgba(20,40,80,.08)
+  }
+  .q-number{font-weight:bold;color:#3867d6;margin-bottom:12px}
+  .question{font-size:21px;font-weight:700;line-height:1.45;margin-bottom:22px}
+  .options{display:grid;gap:12px}
+  button.option{
+    width:100%;padding:15px 17px;text-align:left;border:2px solid #dce4f2;
+    background:#fff;border-radius:12px;font-size:16px;cursor:pointer;
+    transition:.2s
+  }
+  button.option:hover:not(:disabled){border-color:#5b7cfa;background:#f5f8ff}
+  button.option.correct{background:#e9f9ef;border-color:#32a852}
+  button.option.wrong{background:#fff0f0;border-color:#e05252}
+  button.option:disabled{cursor:default}
+  .feedback{
+    margin-top:18px;padding:14px 16px;border-radius:12px;
+    display:none;line-height:1.5
+  }
+  .feedback.show{display:block}
+  .feedback.correct{background:#e9f9ef;color:#176b32}
+  .feedback.wrong{background:#fff0f0;color:#9b2525}
+  .next{
+    margin-top:20px;background:#3867d6;color:white;border:0;border-radius:11px;
+    padding:13px 22px;font-size:16px;font-weight:bold;cursor:pointer;display:none
+  }
+  .next:hover{background:#2f56b5}
+  .result{text-align:center;display:none}
+  .score{font-size:54px;font-weight:800;color:#3867d6;margin:15px 0}
+  .result p{font-size:18px}
+  .restart{
+    margin-top:15px;background:#172b4d;color:white;border:0;border-radius:11px;
+    padding:13px 25px;font-size:16px;font-weight:bold;cursor:pointer
+  }
+  .footer{text-align:center;color:#65738b;font-size:13px;margin-top:18px}
+  @media(max-width:600px){
+    .header h1{font-size:24px}.question{font-size:18px}.card{padding:21px}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Wired vs Wireless Networks</h1>
+    <p>12-question quick quiz • Key terminology • Advantages & disadvantages</p>
+    <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+  </div>
+
+  <div class="card" id="quizCard">
+    <div class="q-number" id="qNumber"></div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next" id="nextBtn">Next question →</button>
+  </div>
+
+  <div class="card result" id="result">
+    <h2>Quiz complete!</h2>
+    <div class="score" id="score"></div>
+    <p id="message"></p>
+    <button class="restart" onclick="restartQuiz()">Try again</button>
+  </div>
+
+  <div class="footer">Based on the lesson content: Wired and wireless networks</div>
+</div>
+
+<script>
+const questions = [
+  {
+    q:"How does a wired network send data?",
+    options:["Through cables","Through radio waves","Through satellites only","Through infrared only"],
+    answer:0,
+    explain:"A wired network sends data along cables."
+  },
+  {
+    q:"How does a wireless network send data?",
+    options:["Through cables","Through radio waves through the air","Only through fibre-optic cables","Only through USB cables"],
+    answer:1,
+    explain:"Wireless networks send data through the air using radio waves."
+  },
+  {
+    q:"What does bandwidth mean?",
+    options:[
+      "The physical length of a network cable",
+      "The amount of data that can be moved from one point to another in a given time",
+      "The number of devices connected to a network",
+      "The distance between two computers"
+    ],
+    answer:1,
+    explain:"Bandwidth is the amount of data that can be moved from one point to another in a given time."
+  },
+  {
+    q:"Which is an advantage of a wired network?",
+    options:["Allows portability","Higher bandwidth","No cables are needed","Devices can move freely"],
+    answer:1,
+    explain:"The lesson identifies higher bandwidth as an advantage of wired networks."
+  },
+  {
+    q:"Which is a disadvantage of a wired network?",
+    options:["Less secure","Lower bandwidth","Devices are in fixed positions","Wireless interference"],
+    answer:2,
+    explain:"Wired devices are in fixed positions, so there is less portability."
+  },
+  {
+    q:"Which is an advantage of a wireless network?",
+    options:["Allows portability","Higher bandwidth","Better security","No interference"],
+    answer:0,
+    explain:"Portability is identified as a key advantage of wireless networks."
+  },
+  {
+    q:"Which is a disadvantage of a wireless network?",
+    options:["Cables can be a trip hazard","Devices are fixed in position","Lower bandwidth","It is expensive to add devices"],
+    answer:2,
+    explain:"Wireless networks can have lower bandwidth because of interference."
+  },
+  {
+    q:"Why can a wireless connection become weaker inside a building?",
+    options:["Because of walls and ceilings","Because cables are too short","Because the keyboard is wireless","Because bandwidth cannot be measured"],
+    answer:0,
+    explain:"Walls and ceilings can weaken wireless connections, causing dropped signals or lower speeds."
+  },
+  {
+    q:"Which statement about wired network security is supported by the lesson?",
+    options:[
+      "Wired networks are less secure because radio signals travel through the air",
+      "Wired networks can provide better security because data is accessed by devices attached to the network",
+      "Wired networks cannot use passwords",
+      "Wired networks are always connected to satellites"
+    ],
+    answer:1,
+    explain:"The lesson states that wired networks can have better security because data is sent across a network to attached devices."
+  },
+  {
+    q:"A family uses tablets and smartphones around the house. Which connection is most suitable according to the lesson?",
+    options:["Wireless","Wired only","No network connection","Serial cable only"],
+    answer:0,
+    explain:"The family scenario uses portable devices and family members move around the house, so wireless is suitable."
+  },
+  {
+    q:"A vlogger frequently uploads videos and also plays online games. Which connection is recommended in the lesson?",
+    options:["Wired","Wireless only","Bluetooth only","Infrared only"],
+    answer:0,
+    explain:"The lesson identifies the vlogger as a wired scenario because uploading videos and online gaming require greater bandwidth."
+  },
+  {
+    q:"Which combination is correct?",
+    options:[
+      "Wired: portability + no trip hazard",
+      "Wireless: higher bandwidth + better security",
+      "Wired: faster connection with little interference + higher bandwidth",
+      "Wireless: fixed positions + cables"
+    ],
+    answer:2,
+    explain:"The lesson lists faster connection with little to no interference and higher bandwidth as wired advantages."
+  }
+];
+
+let current=0, score=0, answered=false;
+
+const qNumber=document.getElementById("qNumber");
+const question=document.getElementById("question");
+const options=document.getElementById("options");
+const feedback=document.getElementById("feedback");
+const nextBtn=document.getElementById("nextBtn");
+const progress=document.getElementById("progress");
+const quizCard=document.getElementById("quizCard");
+const result=document.getElementById("result");
+const scoreEl=document.getElementById("score");
+const message=document.getElementById("message");
+
+function loadQuestion(){
+  answered=false;
+  const item=questions[current];
+  qNumber.textContent=`Question ${current+1} of ${questions.length}`;
+  question.textContent=item.q;
+  options.innerHTML="";
+  feedback.className="feedback";
+  feedback.textContent="";
+  nextBtn.style.display="none";
+  progress.style.width=((current)/questions.length*100)+"%";
+
+  item.options.forEach((opt,i)=>{
+    const btn=document.createElement("button");
+    btn.className="option";
+    btn.textContent=String.fromCharCode(65+i)+". "+opt;
+    btn.onclick=()=>selectAnswer(i,btn);
+    options.appendChild(btn);
+  });
+}
+
+function selectAnswer(i,clicked){
+  if(answered)return;
+  answered=true;
+  const item=questions[current];
+  const buttons=[...document.querySelectorAll(".option")];
+  buttons.forEach(b=>b.disabled=true);
+
+  if(i===item.answer){
+    score++;
+    clicked.classList.add("correct");
+    feedback.className="feedback show correct";
+    feedback.textContent="✓ Correct! "+item.explain;
+  }else{
+    clicked.classList.add("wrong");
+    buttons[item.answer].classList.add("correct");
+    feedback.className="feedback show wrong";
+    feedback.textContent="✗ Not quite. "+item.explain;
+  }
+  progress.style.width=((current+1)/questions.length*100)+"%";
+  nextBtn.style.display="inline-block";
+  nextBtn.textContent=current===questions.length-1?"See result →":"Next question →";
+}
+
+nextBtn.onclick=()=>{
+  current++;
+  if(current<questions.length) loadQuestion();
+  else showResult();
+};
+
+function showResult(){
+  quizCard.style.display="none";
+  result.style.display="block";
+  scoreEl.textContent=`${score} / ${questions.length}`;
+  const pct=score/questions.length*100;
+  if(pct===100) message.textContent="Excellent! You have mastered the key terminology and wired/wireless advantages and disadvantages.";
+  else if(pct>=75) message.textContent="Great work! Review the questions you missed and try again.";
+  else if(pct>=50) message.textContent="Good start. Review the key terminology and the wired vs wireless comparison.";
+  else message.textContent="Keep practising. Review the lesson notes, then try the quiz again.";
+}
+
+function restartQuiz(){
+  current=0;score=0;
+  result.style.display="none";
+  quizCard.style.display="block";
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
